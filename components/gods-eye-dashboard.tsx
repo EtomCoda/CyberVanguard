@@ -24,6 +24,9 @@ const Polyline = dynamic(
   { ssr: false }
 )
 
+import "leaflet/dist/leaflet.css"
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
+
 // Coordinates
 const LAGOS: [number, number] = [6.5244, 3.3792]
 const EUROPE: [number, number] = [48.8566, 2.3522] // Paris
@@ -37,10 +40,17 @@ export function GodsEyeDashboard() {
   const [showAlert, setShowAlert] = useState(false)
   const [animationProgress, setAnimationProgress] = useState(0)
   const [isMapReady, setIsMapReady] = useState(false)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number>(0)
+  const hasInterceptedRef = useRef<boolean>(false)
 
   useEffect(() => {
-    setIsMapReady(true)
+    (async () => {
+      if (typeof window !== "undefined") {
+        // @ts-ignore
+        await import("leaflet-defaulticon-compatibility")
+      }
+      setIsMapReady(true)
+    })()
   }, [])
 
   const startDemo = () => {
@@ -52,6 +62,8 @@ export function GodsEyeDashboard() {
     const startTime = Date.now()
     const duration = 3000
 
+    hasInterceptedRef.current = false
+
     const animate = () => {
       const elapsed = Date.now() - startTime
       const progress = Math.min(elapsed / duration, 1)
@@ -59,7 +71,8 @@ export function GodsEyeDashboard() {
 
       if (progress < 0.5) {
         animationRef.current = requestAnimationFrame(animate)
-      } else if (progress >= 0.5 && demoState !== "intercepted") {
+      } else if (progress >= 0.5 && !hasInterceptedRef.current) {
+        hasInterceptedRef.current = true
         setDemoState("intercepted")
         setShowAlert(true)
         setTimeout(() => {
@@ -106,7 +119,7 @@ export function GodsEyeDashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-cyber-red/20 flex items-center justify-center backdrop-blur-sm"
+            className="fixed inset-0 z-[1000] bg-cyber-red/20 flex items-center justify-center backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
@@ -137,7 +150,7 @@ export function GodsEyeDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">{"God's Eye Dashboard"}</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Sovereignty Sentinel</h2>
           <p className="text-muted-foreground">
             Real-time data sovereignty and compliance monitoring
           </p>

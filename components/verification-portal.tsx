@@ -44,8 +44,6 @@ export function VerificationPortal() {
       setState("verified")
     } else {
       setState("forgery")
-      setShowForgeryAlert(true)
-      setTimeout(() => setShowForgeryAlert(false), 3000)
     }
   }, [])
 
@@ -77,7 +75,6 @@ export function VerificationPortal() {
     setState("idle")
     setHash("")
     setFileName("")
-    setShowForgeryAlert(false)
   }
 
   return (
@@ -237,7 +234,7 @@ export function VerificationPortal() {
                     state === "verified" ? "text-cyber-green" : "text-cyber-red"
                   )}
                 >
-                  {state === "verified" ? "VERIFIED AUTHENTIC" : "FORGERY DETECTED"}
+                  {state === "verified" ? "VERIFIED AUTHENTIC" : "Document Hash mismatch. Tampered document."}
                 </h3>
                 <p className="text-muted-foreground mb-6">{fileName}</p>
 

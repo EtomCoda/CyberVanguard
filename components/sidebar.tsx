@@ -26,7 +26,7 @@ const navItems = [
   },
   {
     id: "dashboard" as View,
-    label: "God's Eye Dashboard",
+    label: "Sovereignty Sentinel",
     icon: Globe,
     description: "Global Compliance",
   },
@@ -49,7 +49,7 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
             />
           </div>
           <div>
-            <h1 className="font-bold text-foreground">CyberShield</h1>
+            <h1 className="font-bold text-foreground">Vanguard</h1>
             <p className="text-xs text-muted-foreground">Security Platform</p>
           </div>
         </div>
