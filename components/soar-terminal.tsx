@@ -142,29 +142,29 @@ export function SOARTerminal() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-foreground mb-2">SOAR Terminal</h2>
-        <p className="text-muted-foreground">
+      <div className="mb-4 md:mb-6">
+        <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 md:mb-2">SOAR Terminal</h2>
+        <p className="text-sm md:text-base text-muted-foreground">
           Security Orchestration, Automation and Response command interface
         </p>
       </div>
 
       {/* Terminal */}
-      <div className="flex-1 bg-card rounded-xl border border-border overflow-hidden flex flex-col">
+      <div className="flex-1 bg-card rounded-xl border border-border overflow-hidden flex flex-col min-h-[350px] md:min-h-0">
         {/* Terminal Header */}
-        <div className="flex items-center gap-2 px-4 py-3 bg-muted/50 border-b border-border">
+        <div className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-3 bg-muted/50 border-b border-border">
           <Terminal className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-foreground">SOAR Terminal</span>
+          <span className="text-xs md:text-sm font-medium text-foreground">SOAR Terminal</span>
           <div className="ml-auto flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-cyber-green" />
-            <span className="text-xs text-muted-foreground">Connected</span>
+            <div className="w-2 md:w-3 h-2 md:h-3 rounded-full bg-cyber-green" />
+            <span className="text-[10px] md:text-xs text-muted-foreground">Connected</span>
           </div>
         </div>
 
         {/* Terminal Output */}
         <div
           ref={terminalRef}
-          className="flex-1 p-4 overflow-y-auto font-mono text-sm"
+          className="flex-1 p-3 md:p-4 overflow-y-auto font-mono text-xs md:text-sm scroll-smooth"
           onClick={() => inputRef.current?.focus()}
         >
           <AnimatePresence>
@@ -204,8 +204,8 @@ export function SOARTerminal() {
 
         {/* Input */}
         <form onSubmit={handleSubmit} className="border-t border-border">
-          <div className="flex items-center px-4 py-3">
-            <ChevronRight className="w-4 h-4 text-primary mr-2" />
+          <div className="flex items-center px-3 md:px-4 py-2 md:py-3 relative">
+            <ChevronRight className="w-4 h-4 text-primary mr-2 flex-shrink-0" />
             <input
               ref={inputRef}
               type="text"
@@ -213,15 +213,16 @@ export function SOARTerminal() {
               onChange={(e) => setInput(e.target.value)}
               disabled={isProcessing}
               placeholder={isProcessing ? "Processing..." : "Enter command..."}
-              className="flex-1 bg-transparent text-foreground font-mono text-sm outline-none placeholder:text-muted-foreground"
+              className="flex-1 bg-transparent text-foreground font-mono text-xs md:text-sm outline-none placeholder:text-muted-foreground"
               autoFocus
+              autoComplete="off"
             />
           </div>
         </form>
       </div>
 
       {/* Quick Commands */}
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-3 md:mt-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
         {Object.keys(COMMANDS)
           .filter((cmd) => cmd !== "help")
           .map((cmd) => (
@@ -234,7 +235,7 @@ export function SOARTerminal() {
                 }
               }}
               disabled={isProcessing}
-              className="px-4 py-2 rounded-lg bg-card border border-border text-sm font-mono text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors disabled:opacity-50"
+              className="px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-card border border-border text-xs md:text-sm font-mono text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors disabled:opacity-50 text-center w-full sm:w-auto"
             >
               {cmd}
             </button>

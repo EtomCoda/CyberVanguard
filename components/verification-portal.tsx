@@ -99,34 +99,34 @@ export function VerificationPortal() {
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 0.5, repeat: Infinity }}
               >
-                <ShieldAlert className="w-32 h-32 text-cyber-red mx-auto mb-6" />
+                <ShieldAlert className="w-20 h-20 md:w-32 md:h-32 text-cyber-red mx-auto mb-4 md:mb-6" />
               </motion.div>
-              <h2 className="text-5xl font-bold text-cyber-red mb-4">FORGERY DETECTED</h2>
-              <p className="text-xl text-foreground/80">Document authentication failed</p>
+              <h2 className="text-3xl md:text-5xl font-bold text-cyber-red mb-2 md:mb-4">FORGERY DETECTED</h2>
+              <p className="text-lg md:text-xl text-foreground/80">Document authentication failed</p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Verification Portal</h2>
-        <p className="text-muted-foreground">
+      <div className="mb-6 md:mb-8 text-center md:text-left">
+        <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 md:mb-2">Verification Portal</h2>
+        <p className="text-sm md:text-base text-muted-foreground">
           Cryptographic document verification using SHA-256 hashing
         </p>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-2xl">
+        <div className="w-full max-w-2xl px-2">
           {state === "idle" && (
             <motion.label
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className={cn(
-                "block border-2 border-dashed rounded-xl p-16 text-center cursor-pointer transition-all duration-300",
+                "block border-2 border-dashed rounded-xl p-8 md:p-16 text-center cursor-pointer transition-all duration-300",
                 isDragging
-                  ? "border-primary bg-primary/10 scale-105"
+                  ? "border-primary bg-primary/10 scale-[1.02] md:scale-105"
                   : "border-border hover:border-primary/50 hover:bg-card"
               )}
               onDrop={handleDrop}
@@ -227,20 +227,21 @@ export function VerificationPortal() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
+                className="w-full max-w-md mx-auto px-4"
               >
                 <h3
                   className={cn(
-                    "text-2xl font-bold mb-2",
+                    "text-xl md:text-2xl font-bold mb-2",
                     state === "verified" ? "text-cyber-green" : "text-cyber-red"
                   )}
                 >
                   {state === "verified" ? "VERIFIED AUTHENTIC" : "Document Hash mismatch. Tampered document."}
                 </h3>
-                <p className="text-muted-foreground mb-6">{fileName}</p>
+                <p className="text-sm md:text-base text-muted-foreground mb-6 break-words">{fileName}</p>
 
-                <div className="bg-card rounded-xl p-6 text-left border border-border">
-                  <p className="text-xs text-muted-foreground mb-2">SHA-256 Hash</p>
-                  <p className="font-mono text-xs text-foreground break-all leading-relaxed">
+                <div className="bg-card rounded-xl p-4 md:p-6 text-left border border-border w-full overflow-hidden">
+                  <p className="text-[10px] md:text-xs text-muted-foreground mb-1 md:mb-2">SHA-256 Hash</p>
+                  <p className="font-mono text-[10px] sm:text-xs text-foreground break-all leading-relaxed">
                     {hash}
                   </p>
                 </div>

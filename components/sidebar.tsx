@@ -34,9 +34,9 @@ const navItems = [
 
 export function Sidebar({ activeView, onViewChange }: SidebarProps) {
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
+    <aside className="fixed bottom-0 left-0 w-full md:top-0 md:h-screen md:w-64 bg-sidebar border-t md:border-t-0 md:border-r border-sidebar-border flex flex-row md:flex-col z-50">
       {/* Logo */}
-      <div className="p-6 border-b border-sidebar-border">
+      <div className="hidden md:block p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
@@ -56,7 +56,7 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-2 md:p-4 flex flex-row md:flex-col justify-around gap-1 md:gap-0 md:space-y-2 overflow-x-auto no-scrollbar">
         {navItems.map((item) => {
           const isActive = activeView === item.id
           return (
@@ -64,37 +64,40 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
               key={item.id}
               onClick={() => onViewChange(item.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-left group relative overflow-hidden",
+                "flex-1 min-w-[80px] md:w-full flex-col md:flex-row flex items-center justify-center md:justify-start gap-1 md:gap-3 p-2 md:px-4 md:py-3 rounded-lg transition-all duration-200 text-center md:text-left group relative overflow-hidden",
                 isActive
-                  ? "bg-primary/20 text-primary"
+                  ? "text-primary bg-primary/10 md:bg-primary/20"
                   : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-primary/10 rounded-lg"
+                  className="absolute inset-0 bg-primary/10 rounded-lg hidden md:block"
                   initial={false}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}
-              <div className="relative z-10 flex items-center gap-3 w-full">
+              <div className="relative z-10 flex flex-col md:flex-row items-center gap-1 md:gap-3 w-full">
                 <div
                   className={cn(
-                    "p-2 rounded-md transition-colors",
-                    isActive ? "bg-primary/20" : "bg-sidebar-accent group-hover:bg-muted"
+                    "p-1.5 md:p-2 rounded-md transition-colors mx-auto md:mx-0",
+                    isActive ? "bg-primary/20" : "bg-transparent md:bg-sidebar-accent group-hover:bg-muted"
                   )}
                 >
-                  <item.icon className="w-4 h-4" />
+                  <item.icon className="w-5 h-5 md:w-4 md:h-4" />
                 </div>
-                <div className="flex-1">
+                <div className="hidden md:block flex-1">
                   <p className="text-sm font-medium">{item.label}</p>
                   <p className="text-xs text-muted-foreground">{item.description}</p>
+                </div>
+                <div className="md:hidden w-full px-1">
+                  <p className="text-[10px] font-medium leading-tight line-clamp-1">{item.label}</p>
                 </div>
               </div>
               {isActive && (
                 <motion.div
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"
+                  className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 rounded-b-full md:left-0 md:top-1/2 md:-translate-y-1/2 md:-translate-x-0 md:w-1 md:h-8 bg-primary md:rounded-r-full md:rounded-b-none"
                   layoutId="activeIndicator"
                 />
               )}
@@ -104,7 +107,7 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
       </nav>
 
       {/* Status */}
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="hidden md:block p-4 border-t border-sidebar-border">
         <div className="flex items-center gap-2">
           <div className="relative">
             <div className="w-2 h-2 rounded-full bg-cyber-green" />

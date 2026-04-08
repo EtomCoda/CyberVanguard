@@ -148,10 +148,10 @@ export function GodsEyeDashboard() {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 md:mb-6 gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">Sovereignty Sentinel</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 md:mb-2">Sovereignty Sentinel</h2>
+          <p className="text-sm md:text-base text-muted-foreground">
             Real-time data sovereignty and compliance monitoring
           </p>
         </div>
@@ -159,7 +159,7 @@ export function GodsEyeDashboard() {
           onClick={startDemo}
           disabled={demoState !== "idle"}
           className={cn(
-            "inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all",
+            "w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all text-sm md:text-base",
             demoState === "idle"
               ? "bg-primary text-primary-foreground hover:bg-primary/90"
               : "bg-muted text-muted-foreground cursor-not-allowed"
@@ -171,9 +171,9 @@ export function GodsEyeDashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 grid grid-cols-4 gap-6">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Map */}
-        <div className="col-span-3 bg-card rounded-xl border border-border overflow-hidden relative">
+        <div className="lg:col-span-3 bg-card rounded-xl border border-border overflow-hidden relative min-h-[350px] md:min-h-[500px]">
           {isMapReady && (
             <MapContainer
               center={[20, 20]}
