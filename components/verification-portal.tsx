@@ -5,9 +5,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Upload, FileText, Shield, ShieldCheck, ShieldAlert, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-// Hardcoded "authorized" hash for demo purposes
-const AUTHORIZED_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-
 type VerificationState = "idle" | "scanning" | "verified" | "forgery"
 
 export function VerificationPortal() {
@@ -16,6 +13,7 @@ export function VerificationPortal() {
   const [fileName, setFileName] = useState<string>("")
   const [isDragging, setIsDragging] = useState(false)
   const [showForgeryAlert, setShowForgeryAlert] = useState(false)
+  const [authorizedHash, setAuthorizedHash] = useState<string>("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 
   const computeHash = async (file: File): Promise<string> => {
     const buffer = await file.arrayBuffer()
@@ -40,12 +38,12 @@ export function VerificationPortal() {
     setHash(computedHash)
 
     // Check against authorized hash
-    if (computedHash === AUTHORIZED_HASH) {
+    if (computedHash === authorizedHash) {
       setState("verified")
     } else {
       setState("forgery")
     }
-  }, [])
+  }, [authorizedHash])
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -246,13 +244,27 @@ export function VerificationPortal() {
                   </p>
                 </div>
 
-                <button
-                  onClick={reset}
-                  className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                  Verify Another Document
-                </button>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+                  <button
+                    onClick={reset}
+                    className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-6 py-3 rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                    Verify Another
+                  </button>
+                  {state === "forgery" && (
+                    <button
+                      onClick={() => {
+                        setAuthorizedHash(hash)
+                        setState("verified")
+                      }}
+                      className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-6 py-3 rounded-lg bg-muted border border-border text-foreground hover:bg-muted/80 transition-colors"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      Trust Document (Demo)
+                    </button>
+                  )}
+                </div>
               </motion.div>
             </motion.div>
           )}
