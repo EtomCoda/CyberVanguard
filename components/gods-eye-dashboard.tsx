@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Play, Shield, AlertTriangle, Check, Globe2, Activity } from "lucide-react"
+import { Shield, AlertTriangle, Check, Globe2, Activity } from "lucide-react"
 import dynamic from "next/dynamic"
 import { cn } from "@/lib/utils"
 
@@ -110,8 +110,45 @@ export function GodsEyeDashboard() {
     return INTERCEPT_POINT
   }
 
+  // Server config state
+  const [servers, setServers] = useState([
+    {
+      id: "srv-01",
+      name: "Primary DB Node",
+      provider: "AWS",
+      region: "Lagos, NG",
+      status: "healthy",
+      dataClass: "PII — Tier 1",
+      encryptionKey: "AES-256-GCM",
+      accessPolicy: "NDPR-Compliant",
+      flagged: false,
+    },
+    {
+      id: "srv-02",
+      name: "Auth Service",
+      provider: "GCP",
+      region: "Lagos, NG",
+      status: "healthy",
+      dataClass: "Auth Tokens",
+      encryptionKey: "RSA-4096",
+      accessPolicy: "NDPR-Compliant",
+      flagged: false,
+    },
+    {
+      id: "srv-03",
+      name: "Analytics Pipeline",
+      provider: "Azure",
+      region: "Lagos, NG",
+      status: "healthy",
+      dataClass: "Behavioural Data",
+      encryptionKey: "AES-256-CBC",
+      accessPolicy: "NDPR-Compliant",
+      flagged: false,
+    },
+  ])
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col gap-6">
       {/* Fullscreen Alert */}
       <AnimatePresence>
         {showAlert && (
@@ -147,196 +184,286 @@ export function GodsEyeDashboard() {
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 md:mb-6 gap-3">
-        <div>
-          <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 md:mb-2">Sovereignty Sentinel</h2>
-          <p className="text-sm md:text-base text-muted-foreground">
-            Real-time data sovereignty and compliance monitoring
-          </p>
-        </div>
-        <button
-          onClick={startDemo}
-          disabled={demoState !== "idle"}
-          className={cn(
-            "w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all text-sm md:text-base",
-            demoState === "idle"
-              ? "bg-primary text-primary-foreground hover:bg-primary/90"
-              : "bg-muted text-muted-foreground cursor-not-allowed"
-          )}
-        >
-          <Play className="w-4 h-4" />
-          {demoState === "idle" ? "Start Demo" : "Demo Running..."}
-        </button>
+      {/* Header — no button, demo starts from Recent Activity card */}
+      <div className="flex flex-col gap-1">
+        <h2 className="text-xl md:text-2xl font-bold text-foreground">Sovereignty Sentinel</h2>
+        <p className="text-sm md:text-base text-muted-foreground">
+          Real-time data sovereignty and compliance monitoring
+        </p>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Map */}
-        <div className="lg:col-span-3 bg-card rounded-xl border border-border overflow-hidden relative min-h-[350px] md:min-h-[500px]">
-          {isMapReady && (
-            <MapContainer
-              center={[20, 20]}
-              zoom={2}
-              className="h-full w-full"
-              zoomControl={false}
-              attributionControl={false}
-            >
-              <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              />
-
-              {/* Lagos Marker */}
-              <Marker position={LAGOS} />
-
-              {/* Europe Marker */}
-              <Marker position={EUROPE} />
-
-              {/* Data Path */}
-              {demoState !== "idle" && (
-                <>
-                  <Polyline
-                    positions={[LAGOS, INTERCEPT_POINT]}
-                    pathOptions={{
-                      color: demoState === "blocked" ? "#EF4444" : "#38BDF8",
-                      weight: 3,
-                      dashArray: "10, 10",
-                    }}
-                  />
-                  {demoState === "blocked" && (
-                    <Polyline
-                      positions={[INTERCEPT_POINT, EUROPE]}
-                      pathOptions={{
-                        color: "#374151",
-                        weight: 2,
-                        dashArray: "5, 10",
-                      }}
-                    />
-                  )}
-                  {/* Animated Packet Marker */}
-                  {demoState === "transmitting" && (
-                    <Marker position={getPacketPosition()} />
-                  )}
-                </>
-              )}
-            </MapContainer>
-          )}
-
-          {/* Map Overlay Labels */}
-          <div className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 border border-border">
-            <div className="flex items-center gap-2 text-sm">
-              <Globe2 className="w-4 h-4 text-primary" />
-              <span className="text-foreground font-medium">Nigeria Region</span>
-            </div>
+      {/* Horizontal Stat Widgets */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* NDPR Compliance */}
+        <div className="bg-card rounded-xl border border-border p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Shield className="w-4 h-4 text-primary" />
+            <h3 className="font-semibold text-sm text-foreground">NDPR Compliance</h3>
           </div>
+          <div className="text-3xl font-bold text-foreground mb-2">{complianceStatus}%</div>
+          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+            <motion.div
+              className={cn("h-full rounded-full", complianceStatus === 100 ? "bg-cyber-green" : "bg-primary")}
+              initial={{ width: "98%" }}
+              animate={{ width: `${complianceStatus}%` }}
+              transition={{ duration: 0.5 }}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Nigeria Data Protection Regulation</p>
+        </div>
 
-          {/* Legend */}
-          <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm rounded-lg p-3 border border-border">
-            <p className="text-xs text-muted-foreground mb-2">Data Flow Legend</p>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-4 h-0.5 bg-primary" />
-                <span className="text-foreground">Active Transfer</span>
+        {/* System Status */}
+        <div className="bg-card rounded-xl border border-border p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Activity className="w-4 h-4 text-primary" />
+            <h3 className="font-semibold text-sm text-foreground">System Status</h3>
+          </div>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Monitoring</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-cyber-green" />
+                <span className="text-xs text-cyber-green">Active</span>
               </div>
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-4 h-0.5 bg-cyber-red" />
-                <span className="text-foreground">Blocked Transfer</span>
-              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Threats Blocked</span>
+              <span className="text-xs text-foreground font-medium">{demoState === "blocked" ? "24" : "23"}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Data Regions</span>
+              <span className="text-xs text-foreground font-medium">3</span>
             </div>
           </div>
         </div>
 
-        {/* Sidebar Widgets */}
-        <div className="space-y-6">
-          {/* Compliance Status */}
-          <div className="bg-card rounded-xl border border-border p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Shield className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold text-foreground">NDPR Compliance</h3>
-            </div>
-            <div className="relative">
-              <div className="text-4xl font-bold text-foreground mb-2">
-                {complianceStatus}%
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
+        {/* Recent Activity — clicking this triggers the demo */}
+        <div
+          onClick={() => {
+            if (demoState !== "idle") return
+            // Step 1: Mutate server card immediately
+            setServers((prev) =>
+              prev.map((s) =>
+                s.id === "srv-03"
+                  ? { ...s, region: "Dubai, UAE", accessPolicy: "NON-COMPLIANT", flagged: true, status: "critical" }
+                  : s
+              )
+            )
+            // Step 2: Start map animation after card has mutated visibly
+            setTimeout(() => startDemo(), 1200)
+            // Step 3: Restore server well after demo fully idle (~9.5s total)
+            setTimeout(() => {
+              setServers((prev) =>
+                prev.map((s) =>
+                  s.id === "srv-03"
+                    ? { ...s, region: "Lagos, NG", accessPolicy: "NDPR-Compliant", flagged: false, status: "healthy" }
+                    : s
+                )
+              )
+            }, 9500)
+          }}
+          className={cn(
+            "bg-card rounded-xl border border-border p-5 transition-colors duration-200",
+            demoState === "idle" ? "cursor-pointer hover:border-border/80" : "cursor-default"
+          )}
+        >
+          <h3 className="font-semibold text-sm text-foreground mb-3">Recent Activity</h3>
+          <div className="space-y-2.5">
+            <AnimatePresence>
+              {demoState === "blocked" && (
                 <motion.div
-                  className={cn(
-                    "h-full rounded-full",
-                    complianceStatus === 100 ? "bg-cyber-green" : "bg-primary"
-                  )}
-                  initial={{ width: "98%" }}
-                  animate={{ width: `${complianceStatus}%` }}
-                  transition={{ duration: 0.5 }}
+                  key="violation"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-start gap-2 p-1.5 rounded-lg bg-cyber-red/10 border border-cyber-red/20"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 text-cyber-red mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs text-foreground">Violation Blocked</p>
+                    <p className="text-[10px] text-muted-foreground">Just now</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <div className="flex items-start gap-2">
+              <Check className="w-3.5 h-3.5 text-cyber-green mt-0.5 shrink-0" />
+              <div>
+                <p className="text-xs text-foreground">Audit Completed</p>
+                <p className="text-[10px] text-muted-foreground">2 hours ago</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <Check className="w-3.5 h-3.5 text-cyber-green mt-0.5 shrink-0" />
+              <div>
+                <p className="text-xs text-foreground">Policy Updated</p>
+                <p className="text-[10px] text-muted-foreground">5 hours ago</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Map — smaller, full width */}
+      <div className="bg-card rounded-xl border border-border overflow-hidden relative h-[280px] md:h-[320px]">
+        {isMapReady && (
+          <MapContainer
+            center={[20, 20]}
+            zoom={2}
+            className="h-full w-full"
+            zoomControl={false}
+            attributionControl={false}
+            scrollWheelZoom={false}
+            dragging={false}
+            doubleClickZoom={false}
+            touchZoom={false}
+          >
+            <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+            <Marker position={LAGOS} />
+            {demoState !== "idle" && (
+              <>
+                <Polyline
+                  positions={[LAGOS, INTERCEPT_POINT]}
+                  pathOptions={{
+                    color: demoState === "blocked" ? "#EF4444" : "#38BDF8",
+                    weight: 3,
+                    dashArray: "10, 10",
+                  }}
                 />
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Nigeria Data Protection Regulation
-              </p>
-            </div>
-          </div>
-
-          {/* Status */}
-          <div className="bg-card rounded-xl border border-border p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Activity className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold text-foreground">System Status</h3>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Monitoring</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-cyber-green" />
-                  <span className="text-sm text-cyber-green">Active</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Threats Blocked</span>
-                <span className="text-sm text-foreground font-medium">
-                  {demoState === "blocked" ? "24" : "23"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Data Regions</span>
-                <span className="text-sm text-foreground font-medium">3</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="bg-card rounded-xl border border-border p-6">
-            <h3 className="font-semibold text-foreground mb-4">Recent Activity</h3>
-            <div className="space-y-3">
-              <AnimatePresence>
                 {demoState === "blocked" && (
+                  <Polyline
+                    positions={[INTERCEPT_POINT, EUROPE]}
+                    pathOptions={{ color: "#374151", weight: 2, dashArray: "5, 10" }}
+                  />
+                )}
+                {demoState === "transmitting" && (
+                  <Marker position={getPacketPosition()} />
+                )}
+              </>
+            )}
+          </MapContainer>
+        )}
+
+        {/* Map Labels */}
+        <div className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-border">
+          <div className="flex items-center gap-2 text-xs">
+            <Globe2 className="w-3.5 h-3.5 text-primary" />
+            <span className="text-foreground font-medium">Nigeria Region</span>
+          </div>
+        </div>
+        <div className="absolute bottom-3 left-3 bg-background/80 backdrop-blur-sm rounded-lg p-2.5 border border-border">
+          <p className="text-[10px] text-muted-foreground mb-1">Data Flow Legend</p>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-[10px]">
+              <div className="w-3 h-0.5 bg-primary" />
+              <span className="text-foreground">Active Transfer</span>
+            </div>
+            <div className="flex items-center gap-2 text-[10px]">
+              <div className="w-3 h-0.5 bg-cyber-red" />
+              <span className="text-foreground">Blocked Transfer</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Server Cards */}
+      <div>
+        <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+          <Activity className="w-4 h-4 text-primary" />
+          Cloud Infrastructure — Hosted Services
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {servers.map((server) => (
+            <div
+              key={server.id}
+              className={cn(
+                "rounded-xl border p-4 bg-card relative overflow-hidden transition-colors duration-700",
+                server.flagged ? "border-cyber-red" : "border-border"
+              )}
+            >
+              {/* Pulsing red glow ring — only rendered while flagged, removed cleanly on restore */}
+              <AnimatePresence>
+                {server.flagged && (
                   <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-start gap-3 p-2 rounded-lg bg-cyber-red/10 border border-cyber-red/20"
-                  >
-                    <AlertTriangle className="w-4 h-4 text-cyber-red mt-0.5" />
-                    <div>
-                      <p className="text-sm text-foreground">Violation Blocked</p>
-                      <p className="text-xs text-muted-foreground">Just now</p>
-                    </div>
-                  </motion.div>
+                    key="flagged-ring"
+                    initial={{ opacity: 0 }}
+                    animate="pulse"
+                    exit={{ opacity: 0, transition: { duration: 0.4, repeat: 0 } }}
+                    variants={{
+                      pulse: {
+                        opacity: [0.1, 0.3, 0.1],
+                        transition: { duration: 1.2, repeat: Infinity, ease: "easeInOut" },
+                      },
+                    }}
+                    className="absolute inset-0 rounded-xl bg-cyber-red pointer-events-none"
+                  />
                 )}
               </AnimatePresence>
-              <div className="flex items-start gap-3">
-                <Check className="w-4 h-4 text-cyber-green mt-0.5" />
+
+              {/* Card Header */}
+              <div className="relative flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-sm text-foreground">Audit Completed</p>
-                  <p className="text-xs text-muted-foreground">2 hours ago</p>
+                  <p className="text-sm font-semibold text-foreground">{server.name}</p>
+                  <p className="text-xs text-muted-foreground">{server.provider}</p>
                 </div>
+                <span
+                  className={cn(
+                    "text-[10px] font-medium px-2 py-0.5 rounded-full transition-colors duration-500",
+                    server.status === "healthy"
+                      ? "bg-cyber-green/10 text-cyber-green"
+                      : "bg-cyber-red/10 text-cyber-red"
+                  )}
+                >
+                  {server.status === "healthy" ? "● Healthy" : "⚠ Critical"}
+                </span>
               </div>
-              <div className="flex items-start gap-3">
-                <Check className="w-4 h-4 text-cyber-green mt-0.5" />
-                <div>
-                  <p className="text-sm text-foreground">Policy Updated</p>
-                  <p className="text-xs text-muted-foreground">5 hours ago</p>
+
+              {/* Config Fields */}
+              <div className="relative space-y-2 font-mono text-[11px]">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">region</span>
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={server.region}
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      className={cn(
+                        "font-medium",
+                        server.flagged ? "text-cyber-red" : "text-foreground"
+                      )}
+                    >
+                      {server.region}
+                    </motion.span>
+                  </AnimatePresence>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">data_class</span>
+                  <span className="text-foreground">{server.dataClass}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">encryption</span>
+                  <span className="text-cyber-green">{server.encryptionKey}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">access_policy</span>
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={server.accessPolicy}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className={cn(
+                        "font-semibold transition-colors duration-500",
+                        server.flagged ? "text-cyber-red" : "text-cyber-green"
+                      )}
+                    >
+                      {server.accessPolicy}
+                    </motion.span>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

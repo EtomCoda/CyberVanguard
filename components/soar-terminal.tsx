@@ -13,19 +13,24 @@ interface LogEntry {
   timestamp: Date
 }
 
-const COMMANDS: Record<string, { outputs: Array<{ text: string; risk: "low" | "medium" | "high" }> }> = {
+const COMMANDS: Record<string, { outputs: Array<{ text: string; risk?: "low" | "medium" | "high" }> }> = {
   analyze_logs: {
     outputs: [
+      { text: "[SYSTEM] Connecting to log aggregator at siem.vanguard.local..." },
+      { text: "[SYSTEM] Session authenticated. Pulling last 24h window." },
       { text: "[INFO] Parsing auth logs from /var/log/auth.log...", risk: "low" },
       { text: "[OK] User admin@company.com logged in from 192.168.1.100", risk: "low" },
       { text: "[OK] Session established for user: john.doe", risk: "low" },
       { text: "[WARN] Failed login attempt detected from 45.33.32.156 (Russia)", risk: "medium" },
       { text: "[WARN] Sandboxing user: suspicious_user_ru for 24h", risk: "medium" },
       { text: "[INFO] Analysis complete. 2 anomalies detected.", risk: "low" },
+      { text: "[SYSTEM] Report written to /var/reports/auth_audit_2024.log" },
     ],
   },
   scan_network: {
     outputs: [
+      { text: "[SYSTEM] Initializing network probe on interface eth0..." },
+      { text: "[SYSTEM] Target range: 10.0.0.0/24 — 254 hosts." },
       { text: "[INFO] Initiating network scan on 10.0.0.0/24...", risk: "low" },
       { text: "[OK] Host 10.0.0.1 (Gateway) - ONLINE", risk: "low" },
       { text: "[OK] Host 10.0.0.50 (WebServer) - ONLINE", risk: "low" },
@@ -33,10 +38,13 @@ const COMMANDS: Record<string, { outputs: Array<{ text: string; risk: "low" | "m
       { text: "[CRITICAL] Potential C2 beacon detected on 10.0.0.77:4444", risk: "high" },
       { text: "[ACTION] Isolating host 10.0.0.77 from network...", risk: "high" },
       { text: "[INFO] Network scan complete. 1 critical threat neutralized.", risk: "low" },
+      { text: "[SYSTEM] Scan report saved. Duration: 4.2s." },
     ],
   },
   threat_hunt: {
     outputs: [
+      { text: "[SYSTEM] Initializing Vanguard Threat Intelligence Engine v3.4..." },
+      { text: "[SYSTEM] Syncing IOC database — 1,204,331 signatures loaded." },
       { text: "[INFO] Loading threat intelligence feeds...", risk: "low" },
       { text: "[INFO] Cross-referencing with MITRE ATT&CK database...", risk: "low" },
       { text: "[WARN] IOC Match: Hash a1b2c3d4... found in memory", risk: "medium" },
@@ -45,6 +53,7 @@ const COMMANDS: Record<string, { outputs: Array<{ text: string; risk: "low" | "m
       { text: "[ACTION] Executing Kill Switch Protocol...", risk: "high" },
       { text: "[ACTION] Quarantining affected files...", risk: "high" },
       { text: "[OK] Threat neutralized. System restored to safe state.", risk: "low" },
+      { text: "[SYSTEM] Incident ID #VG-20241-0042 logged for forensic review." },
     ],
   },
   help: {
@@ -134,8 +143,10 @@ export function SOARTerminal() {
         return "text-cyber-red"
       case "medium":
         return "text-cyber-orange"
+      case "low":
+        return "text-yellow-400"
       default:
-        return "text-foreground"
+        return "text-white"
     }
   }
 
